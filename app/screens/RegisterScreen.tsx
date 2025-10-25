@@ -1,9 +1,11 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
-import { Alert, RefreshControl, ScrollView, Text } from 'react-native'
+import { Alert, Image, RefreshControl, ScrollView, Text } from 'react-native'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import useAuth from '../hooks/useAuth'
+
+const icon = require('../../assets/images/icon.png')
 
 const RegisterScreen: React.FC = () => {
   const [loading, setLoading] = useState(false)
@@ -75,6 +77,9 @@ const RegisterScreen: React.FC = () => {
       contentContainerStyle={{ justifyContent: 'center', flexGrow: 1 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
+      {/* @ts-ignore */}
+      <Image source={icon} style={{ width: 80, height: 80, alignSelf: 'center' }} />
+
       <Text className="text-2xl font-semibold text-text text-center mb-5 mt-5">Crear Cuenta</Text>
 
       <Input placeholder="Correo electrónico" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
