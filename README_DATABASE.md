@@ -326,6 +326,25 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 ```
 
+### Función para obtener perfil por email (para verificación TOTP):
+```sql
+CREATE OR REPLACE FUNCTION public.fn_get_profile_by_email(p_email TEXT)
+RETURNS TABLE (
+  id UUID,
+  otp_secret TEXT
+)
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT p.id, p.otp_secret
+  FROM auth.users u
+  JOIN public.profiles p ON p.id = u.id
+  WHERE u.email = p_email;
+END;
+$$ LANGUAGE plpgsql;
+```
+
 ## Configuración Inicial de Datos
 
 ### Crear perfil automáticamente al registrarse:

@@ -4,7 +4,7 @@ Una aplicación móvil desarrollada con React Native y Expo que conecta proveedo
 
 ## 🚀 Características Principales
 
-- **Autenticación segura** con Supabase Auth.
+- **Autenticación segura** con Supabase Auth y verificación TOTP opcional.
 - **Perfiles diferenciados**: Clientes y proveedores con interfaces personalizadas.
 - **Gestión de servicios**: Proveedores pueden crear, editar y eliminar sus servicios.
 - **Búsqueda y reservas**: Clientes pueden buscar servicios por categoría y reservar con validaciones automáticas.
@@ -101,6 +101,7 @@ marketplace-services/
 
 ### Autenticación y Perfiles
 - Registro y login con email y contraseña.
+- **Verificación TOTP opcional**: Los usuarios pueden activar autenticación de dos factores.
 - Setup inicial de perfil: nombre, teléfono y tipo (cliente/proveedor).
 - Perfiles automáticos creados al registrarse.
 
@@ -138,6 +139,7 @@ marketplace-services/
 ### Funciones Útiles
 - `get_provider_services(provider_id)`: Obtiene servicios de un proveedor.
 - `get_client_bookings(client_id)`: Obtiene reservas de un cliente.
+- `fn_get_profile_by_email(email)`: Obtiene perfil y secreto TOTP por email para verificación previa al login.
 - Validaciones para reservas activas y transiciones de estados.
 
 Para más detalles, consulta `DATABASE_README.md`.
