@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     full_name TEXT,
     phone TEXT,
     user_type TEXT CHECK (user_type IN ('cliente', 'proveedor')) DEFAULT 'cliente',
+    otp_secret TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -245,6 +246,65 @@ CREATE INDEX IF NOT EXISTS idx_reservas_cliente ON reservas(id_cliente);
 CREATE INDEX IF NOT EXISTS idx_reservas_servicio ON reservas(id_servicio);
 CREATE INDEX IF NOT EXISTS idx_reservas_estado ON reservas(estado);
 CREATE INDEX IF NOT EXISTS idx_reservas_fecha ON reservas(fecha);
+
+-- =============================================
+-- 8. ÍNDICES PARA MEJORAR EL RENDIMIENTO
+-- =============================================
+
+-- Inserción de datos de ejemplo en la tabla servicios
+INSERT INTO servicios (id_proveedor, titulo, descripcion, categoria, precio, ubicacion, imagen_url)
+VALUES
+-- Limpieza
+(gen_random_uuid(), 'Limpieza de casas', 'Servicio completo de limpieza para hogares y apartamentos.', 'Limpieza', 25.00, 'San Salvador', 'https://plus.unsplash.com/premium_photo-1663011218145-c1d0c3ba3542?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Plomería
+(gen_random_uuid(), 'Reparaciones de plomería', 'Instalación y reparación de tuberías, grifos y drenajes.', 'Plomería', 35.00, 'Santa Tecla', 'https://images.unsplash.com/photo-1676210134188-4c05dd172f89?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1974'),
+-- Electricidad
+(gen_random_uuid(), 'Electricista profesional', 'Instalación eléctrica, mantenimiento y reparación de cortocircuitos.', 'Electricidad', 40.00, 'Soyapango', 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1469'),
+-- Jardinería
+(gen_random_uuid(), 'Mantenimiento de jardines', 'Poda, limpieza y diseño de áreas verdes.', 'Jardinería', 30.00, 'Antiguo Cuscatlán', 'https://images.unsplash.com/photo-1611843467160-25afb8df1074?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Belleza
+(gen_random_uuid(), 'Corte y peinado a domicilio', 'Estilista profesional con servicio personalizado.', 'Belleza', 20.00, 'Mejicanos', 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1469'),
+-- Mantenimiento
+(gen_random_uuid(), 'Mantenimiento general del hogar', 'Servicios de mantenimiento preventivo y correctivo.', 'Mantenimiento', 50.00, 'Santa Ana', 'https://plus.unsplash.com/premium_photo-1723863635114-582d44ddae3b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1514'),
+-- Reparaciones
+(gen_random_uuid(), 'Reparación de electrodomésticos', 'Arreglo de refrigeradoras, lavadoras y microondas.', 'Reparaciones', 45.00, 'San Miguel', 'https://images.unsplash.com/photo-1563770660941-20978e870e26?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Pintura
+(gen_random_uuid(), 'Pintura de interiores y exteriores', 'Servicios de pintura profesional para casas y oficinas.', 'Pintura', 60.00, 'La Libertad', 'https://plus.unsplash.com/premium_photo-1723662253911-db2eaa3324be?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1493'),
+-- Carpintería
+(gen_random_uuid(), 'Muebles a medida', 'Diseño y construcción de muebles personalizados.', 'Carpintería', 80.00, 'San Salvador', 'https://images.unsplash.com/photo-1650211578919-b44b5521aaa1?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Mudanzas
+(gen_random_uuid(), 'Servicio de mudanzas', 'Traslado de muebles y pertenencias con cuidado y rapidez.', 'Mudanzas', 70.00, 'Soyapango', 'https://plus.unsplash.com/premium_photo-1675884215301-240f3fb01cec?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1469'),
+-- Eventos
+(gen_random_uuid(), 'Organización de eventos', 'Planificación completa de bodas, cumpleaños y reuniones.', 'Eventos', 120.00, 'Santa Tecla', 'https://plus.unsplash.com/premium_photo-1723471212652-06d5aea09548?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1146'),
+-- Salud
+(gen_random_uuid(), 'Consulta médica a domicilio', 'Médico general con atención personalizada.', 'Salud', 40.00, 'San Salvador', 'https://plus.unsplash.com/premium_photo-1673953510197-0950d951c6d9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1471'),
+-- Educación
+(gen_random_uuid(), 'Clases particulares', 'Tutorías de matemáticas, inglés y ciencias.', 'Educación', 15.00, 'Santa Ana', 'https://plus.unsplash.com/premium_photo-1666299434616-9fafc0656de1?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Tecnología
+(gen_random_uuid(), 'Soporte técnico informático', 'Reparación de computadoras, laptops y redes domésticas.', 'Tecnología', 25.00, 'San Salvador', 'https://plus.unsplash.com/premium_photo-1678565546519-199bd54cf7d9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Automotriz
+(gen_random_uuid(), 'Mecánica automotriz', 'Diagnóstico y reparación de autos y motocicletas.', 'Automotriz', 75.00, 'Ilopango', 'https://plus.unsplash.com/premium_photo-1661963708371-f839fea49826?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Construcción
+(gen_random_uuid(), 'Remodelaciones y construcción', 'Obras civiles, ampliaciones y acabados.', 'Construcción', 200.00, 'Santa Tecla', 'https://plus.unsplash.com/premium_photo-1663133650345-86c16f913d61?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1472'),
+-- Diseño
+(gen_random_uuid(), 'Diseño gráfico y branding', 'Creación de logos, branding y material digital.', 'Diseño', 30.00, 'San Salvador', 'https://images.unsplash.com/photo-1649000808933-1f4aac7cad9a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Cocina
+(gen_random_uuid(), 'Chef a domicilio', 'Preparación de cenas y menús personalizados.', 'Cocina', 60.00, 'Antiguo Cuscatlán', 'https://images.unsplash.com/photo-1659354219145-dedd2324698e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Mascotas
+(gen_random_uuid(), 'Paseo y cuidado de mascotas', 'Paseadores profesionales y cuidado a domicilio.', 'Mascotas', 18.00, 'Santa Tecla', 'https://picsum.photos/350/200?random=19'),
+-- Transporte
+(gen_random_uuid(), 'Transporte privado', 'Servicio de traslado seguro dentro del país.', 'Transporte', 50.00, 'San Miguel', 'https://images.unsplash.com/photo-1681744773444-b8a6bd598f4b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Seguridad
+(gen_random_uuid(), 'Instalación de cámaras de seguridad', 'Montaje y configuración de sistemas de videovigilancia.', 'Seguridad', 90.00, 'San Salvador', 'https://images.unsplash.com/photo-1649182121472-26ea720befc6?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1475'),
+-- Consultoría
+(gen_random_uuid(), 'Consultoría empresarial', 'Asesoría en procesos administrativos y gestión de negocios.', 'Consultoría', 100.00, 'Santa Ana', 'https://plus.unsplash.com/premium_photo-1664392373164-5aae3dbc7ea3?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1047'),
+-- Fotografía
+(gen_random_uuid(), 'Fotografía profesional', 'Sesiones fotográficas para eventos, productos y retratos.', 'Fotografía', 80.00, 'San Salvador', 'https://images.unsplash.com/photo-1735652306493-d28209cb0a08?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Música
+(gen_random_uuid(), 'Clases de guitarra y piano', 'Profesor de música con experiencia en distintos géneros.', 'Música', 25.00, 'Santa Tecla', 'https://plus.unsplash.com/premium_photo-1681389283458-f9ba02998461?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470'),
+-- Deportes
+(gen_random_uuid(), 'Entrenador personal', 'Rutinas personalizadas y asesoramiento nutricional.', 'Deportes', 30.00, 'San Salvador', 'https://plus.unsplash.com/premium_photo-1663050901483-ee8703cc8372?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470');
+
 
 -- =============================================
 -- 9. VERIFICACIÓN DE LA INSTALACIÓN
