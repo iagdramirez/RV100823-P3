@@ -15,6 +15,7 @@ Información adicional de los usuarios más allá de la autenticación básica d
 - `user_type` (TEXT) - Tipo de usuario: 'cliente' o 'proveedor'
 - `created_at` (TIMESTAMP) - Fecha de creación automática
 - `updated_at` (TIMESTAMP) - Fecha de actualización automática
+- `otp_secret` (TEXT) - Código secreto del OTP'
 
 ### 2. Servicios (Tabla: `servicios`)
 Servicios ofrecidos por los proveedores en el marketplace.
